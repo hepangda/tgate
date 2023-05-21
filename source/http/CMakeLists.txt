@@ -9,8 +9,6 @@ add_library(tg_http
         http_base.cc
         http_base.h
         http_constants.h
-        http_request_parser.cc
-        http_request_parser.h
         http_request.cc
         http_request.h
         http_response.cc

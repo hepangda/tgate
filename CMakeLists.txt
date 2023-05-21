@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD 23)
 
 enable_testing()
 find_package(GTest CONFIG REQUIRED)
-link_libraries(GTest::gmock GTest::gtest)
+link_libraries(GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
 
 find_package(jsoncpp CONFIG REQUIRED)
-link_libraries(jsoncpp_object jsoncpp_static JsonCpp::JsonCpp)
+link_libraries(JsonCpp::JsonCpp)
 
 include_directories(.)
 
@@ -27,4 +27,9 @@ add_subdirectory(test/http)
 
 add_executable(tgate source/main.cc)
 
-target_link_libraries(tgate tg_core tg_foundation tg_http tg_fastcgi)
+target_link_libraries(tgate
+    tg_core
+
+    # tg_foundation
+    tg_http
+    tg_fastcgi)

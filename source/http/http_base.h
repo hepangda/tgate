@@ -6,9 +6,13 @@
  */
 #pragma once
 
+#include <algorithm>
+#include <cstring>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -20,10 +24,6 @@ namespace tg {
 
 class HttpBase : public Noncopyable {
  public:
-  std::optional<std::string_view> header(const std::string_view &key) const;
-  void add_header(const std::string &key, const std::string &val);
-  void clear_header();
-
   std::string_view origin() { return *origin_; }
   void print_headers() {
     for (auto [k, v] : headers_) {
@@ -31,22 +31,39 @@ class HttpBase : public Noncopyable {
     }
   }
 
-  void construct(const std::string &test);
+  void construct(std::unique_ptr<std::string> origin);
 
-  bool have_entity() const;
+  // Accessors
+  void http_version(std::string_view http_version) { http_version_ = http_version; }
+  std::string_view http_version() const { return http_version_; }
 
- private:
-  std::string_view first_line_;
-  std::string_view http_version_;
-  std::unordered_map<std::string_view, std::string_view> headers_;
+  void first_line(std::string_view first_line) { first_line_ = first_line; }
+  std::string_view first_line() const { return first_line_; }
+
+
+  const std::unordered_map<std::string_view, std::string_view> &headers() const { return headers_; }
+
+  std::optional<std::string_view> header(const std::string_view &key) const;
+  void add_header(const std::string &key, const std::string &val);
+  void clear_header();
+
+  bool have_entity() const { return entity_ && entity_->size() > 0; }
+  std::optional<std::string_view> entity() const { return entity_; }
+
+ protected:
   std::unique_ptr<std::string> origin_;
-  std::string::const_iterator first_line_begin_;
-  std::string::const_iterator first_line_end_;
-  std::string::const_iterator header_begin_;
-  std::string::const_iterator header_end_;
-  bool have_entity_;
-  std::string::const_iterator entity_begin_;
-  std::string::const_iterator entity_end_;
+
+  std::string_view http_version_;
+  std::string_view first_line_;
+  std::optional<std::string_view> header_lines_;
+  std::optional<std::string_view> entity_;
+
+  std::unordered_map<std::string_view, std::string_view> headers_;
+
+ protected:
+  virtual void parseFirstLine(std::ranges::subrange<std::string::iterator, std::string::iterator>) = 0;
+  void parseHeaders(std::ranges::subrange<std::string::iterator, std::string::iterator> a);
+  void parseEntity();
 };
 
 }  // namespace tg

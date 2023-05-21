@@ -11,19 +11,19 @@
 #include <cstddef>
 #include <cstring>
 
-namespace std {
+// namespace std {
 
-template <class To, class From>
-using BitCast_ReturnType = std::enable_if_t<
-    sizeof(To) == sizeof(From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>;
+// template <class To, class From>
+// using BitCast_ReturnType = std::enable_if_t<
+//     sizeof(To) == sizeof(From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>;
 
-template <class To, class From>
-BitCast_ReturnType<To, From> bit_cast(const From &src) noexcept {
-  static_assert(std::is_trivially_constructible_v<To>,
-                "This implementation additionally requires destination type_ to be trivially constructible");
-  To dst;
-  std::memcpy(&dst, &src, sizeof(To));
-  return dst;
-}
+// template <class To, class From>
+// BitCast_ReturnType<To, From> bit_cast(const From &src) noexcept {
+//   static_assert(std::is_trivially_constructible_v<To>,
+//                 "This implementation additionally requires destination type_ to be trivially constructible");
+//   To dst;
+//   std::memcpy(&dst, &src, sizeof(To));
+//   return dst;
+// }
 
-}  // namespace std
+// }  // namespace std
